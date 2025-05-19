@@ -19,4 +19,4 @@ import { getTypeOrmConfig } from './database/typeorm.config';
   ],
   exports: [ConfigModule, TypeOrmModule],
 })
-export class SharedModule {}
+export class CommonModule {}
