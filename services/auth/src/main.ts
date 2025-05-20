@@ -20,7 +20,7 @@ async function bootstrap() {
   const port = configService.getOrThrow<number>('api.port');
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('docs', app, document, {
+  SwaggerModule.setup('/auth/docs', app, document, {
     swaggerOptions: {
       supportedSubmitMethods: [],
     },

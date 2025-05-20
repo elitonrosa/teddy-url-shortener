@@ -2,6 +2,9 @@
   "name": "teddy-url-shortner",
   "version": "0.0.1",
   "main": "index.js",
+  "engines": {
+    "node": "22.15.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
