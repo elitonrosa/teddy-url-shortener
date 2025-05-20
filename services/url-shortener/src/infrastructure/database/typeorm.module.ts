@@ -13,6 +13,8 @@ import { ConfigService } from '@nestjs/config';
         username: configService.getOrThrow<string>('database.username'),
         password: configService.getOrThrow<string>('database.password'),
         database: configService.getOrThrow<string>('database.database'),
+        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        migrationsRun: true,
         entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
