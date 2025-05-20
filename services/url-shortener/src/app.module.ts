@@ -5,6 +5,7 @@ import { GlobalTypeOrmModule } from './infrastructure/database/typeorm.module';
 import { GlobalConfigModule } from 'src/infrastructure/config/config.module';
 import { GlobalBullModule } from './infrastructure/queue/bull.module';
 import { UserContextMiddleware } from './shared/middlewares/user-context.middleware';
+import { LoggerModule } from './infrastructure/logger/logger.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UserContextMiddleware } from './shared/middlewares/user-context.middlew
     GlobalTypeOrmModule,
     GlobalBullModule,
     ShortUrlModule,
+    LoggerModule,
   ],
   controllers: [],
   providers: [],
