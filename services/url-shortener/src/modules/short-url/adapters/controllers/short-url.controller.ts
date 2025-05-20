@@ -34,7 +34,7 @@ import {
 import { UpdateShortUrlRequestDto } from '../dtos/update-short-url.dto';
 import { ShortUrlExceptionFilter } from '../filters/short-url-exception.filter';
 import { UserId } from '../../../../shared/decorators/user-id.decorator';
-import { RequireUser } from '../../../../shared/decorators/require-user.decorator';
+import { RequireAuth } from '../../../../shared/decorators/require-auth.decorator';
 
 @ApiTags('short-urls')
 @Controller()
@@ -63,7 +63,7 @@ export class ShortUrlController {
   }
 
   @Get('short-urls')
-  @RequireUser()
+  @RequireAuth()
   @ApiOperation({ summary: 'Lista as URLs curtas' })
   @ApiResponse({ status: 200, type: ListShortUrlsResponseDto })
   async list(
@@ -87,7 +87,7 @@ export class ShortUrlController {
   }
 
   @Put('short-urls/:shortCode')
-  @RequireUser()
+  @RequireAuth()
   @ApiOperation({ summary: 'Atualiza a URL curta' })
   @ApiResponse({ status: 200 })
   async update(
@@ -104,7 +104,7 @@ export class ShortUrlController {
   }
 
   @Delete('short-urls/:shortCode')
-  @RequireUser()
+  @RequireAuth()
   @ApiOperation({ summary: 'Deleta a URL curta' })
   @ApiResponse({ status: 200 })
   async delete(
