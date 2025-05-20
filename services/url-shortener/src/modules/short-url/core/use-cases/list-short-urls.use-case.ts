@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { UnauthorizedListException } from 'src/modules/short-url/core/exceptions/short-url.exception';
+import { UnauthorizedListException } from '../../core/exceptions/short-url.exception';
 import {
   SHORT_URL_REPOSITORY,
   URL_FORMATTER,

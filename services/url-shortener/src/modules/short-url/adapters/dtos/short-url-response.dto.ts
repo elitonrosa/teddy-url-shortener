@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponseDto } from 'src/shared/dtos/pagination.dto';
+
+import { PaginationResponseDto } from '../../../../shared/dtos/pagination.dto';
 
 export class ShortUrlResponseDto {
   @ApiProperty({
