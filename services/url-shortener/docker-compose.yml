@@ -9,6 +9,7 @@ services:
       - NODE_ENV=production
       - DB_HOST=postgres_url_shortener
       - REDIS_HOST=redis_url_shortener
+      - REDIS_PORT=${REDIS_PORT}
     env_file:
       - .env
     depends_on:
