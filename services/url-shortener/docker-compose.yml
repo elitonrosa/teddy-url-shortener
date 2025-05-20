@@ -1,0 +1,60 @@
+services:
+  url_shortener:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres_url_shortener
+      - REDIS_HOST=redis_url_shortener
+      - REDIS_PORT=${REDIS_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - postgres_url_shortener
+      - redis_url_shortener
+    networks:
+      - url-shortener-network
+
+  postgres_url_shortener:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - NODE_ENV=production
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - url-shortener-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis_url_shortener:
+    image: redis:7
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - url-shortener-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  url-shortener-network:
+    driver: bridge 
