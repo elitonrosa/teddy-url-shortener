@@ -1,13 +1,20 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppModule } from './app.module';
 import { swaggerConfig } from './config/swagger/swagger.config';
+import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
+
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   const configService = app.get(ConfigService);
   const port = configService.getOrThrow<number>('api.port');
@@ -26,9 +33,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(port, '0.0.0.0', () => {
-    Logger.log(`Server is running on port ${port}`);
-  });
+  await app.listen(port, '0.0.0.0');
 }
 
 bootstrap();
