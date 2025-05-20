@@ -1,0 +1,134 @@
+services:
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    networks:
+      - teddy-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - API_PORT=3000
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+      - JWT_ALGORITHM=RS256
+      - JWT_EXPIRES_IN=1h
+      - DB_HOST=auth-db
+      - DB_PORT=5432
+      - DB_DATABASE=auth
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+    depends_on:
+      - auth-db
+    networks:
+      - teddy-network
+
+  url-shortener-service:
+    build:
+      context: ./services/url-shortener
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - API_PORT=3001
+      - API_DOMAIN=http://localhost:8080
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+      - JWT_ALGORITHM=RS256
+      - DB_HOST=url-shortener-db
+      - DB_PORT=5432
+      - DB_DATABASE=url_shortener
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - REDIS_HOST=redis_url_shortener
+      - REDIS_PORT=6379
+    depends_on:
+      - url-shortener-db
+    networks:
+      - teddy-network
+
+  url-shortener-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=url_shortener
+    ports:
+      - "5433:5432"
+    volumes:
+      - url-db-data:/var/lib/postgresql/data
+    networks:
+      - teddy-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d url_shortener"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis_url_shortener:
+    image: redis:7
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - teddy-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  kong:
+    image: kong:3.4
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+    ports:
+      - "8080:8000"  
+      - "8001:8001"  
+    volumes:
+      - ./gateway/kong.yml:/usr/local/kong/kong.yml:ro
+    networks:
+      - teddy-network
+    depends_on:
+      - auth-service
+      - url-shortener-service
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  teddy-network:
+    driver: bridge
+
+volumes:
+  auth-db-data:
+  url-db-data:
+  redis_data:
