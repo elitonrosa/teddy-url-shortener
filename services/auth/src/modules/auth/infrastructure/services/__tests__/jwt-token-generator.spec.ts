@@ -3,16 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtTokenGenerator } from '../jwt-token-generator';
 import { JwtService } from '@nestjs/jwt';
 
-jest.mock('jose', () => ({
-  SignJWT: jest.fn().mockImplementation(() => ({
-    setProtectedHeader: jest.fn().mockReturnThis(),
-    setIssuedAt: jest.fn().mockReturnThis(),
-    setExpirationTime: jest.fn().mockReturnThis(),
-    setSubject: jest.fn().mockReturnThis(),
-    sign: jest.fn().mockResolvedValue('mock-token'),
-  })),
-}));
-
 describe('JwtTokenGenerator', () => {
   let service: JwtTokenGenerator;
   let configService: any;
@@ -68,10 +58,11 @@ describe('JwtTokenGenerator', () => {
       expect(jwtService.signAsync).toHaveBeenCalledWith(payload, {
         privateKey: 'mock-private-key',
         algorithm: 'RS256',
-        keyid: 'auth-key-1',
+        expiresIn: '1h',
       });
       expect(configService.getOrThrow).toHaveBeenCalledWith('jwt.privateKey');
       expect(configService.getOrThrow).toHaveBeenCalledWith('jwt.algorithm');
+      expect(configService.getOrThrow).toHaveBeenCalledWith('jwt.expiresIn');
     });
   });
 });

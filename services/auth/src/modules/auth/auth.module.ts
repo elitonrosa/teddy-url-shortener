@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Algorithm } from 'jsonwebtoken';
 
 import { AuthController } from './adapters/controllers/auth.controller';
-import { JwksController } from './adapters/controllers/jwks.controller';
 import {
   PASSWORD_HASHER,
   TOKEN_GENERATOR,
@@ -16,7 +15,6 @@ import { RegisterUserUseCase } from './core/use-cases/register-user.use-case';
 import { UserEntity } from './infrastructure/entities/user.entity';
 import { UserRepository } from './infrastructure/repositories/user.repository';
 import { BcryptPasswordHasher } from './infrastructure/services/bcrypt-password-hasher';
-import { JwksService } from './infrastructure/services/jwks.service';
 import { JwtTokenGenerator } from './infrastructure/services/jwt-token-generator';
 
 @Module({
@@ -35,7 +33,7 @@ import { JwtTokenGenerator } from './infrastructure/services/jwt-token-generator
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController, JwksController],
+  controllers: [AuthController],
   providers: [
     {
       provide: USER_REPOSITORY,
@@ -49,7 +47,6 @@ import { JwtTokenGenerator } from './infrastructure/services/jwt-token-generator
       provide: TOKEN_GENERATOR,
       useClass: JwtTokenGenerator,
     },
-    JwksService,
     RegisterUserUseCase,
     LoginUserUseCase,
   ],

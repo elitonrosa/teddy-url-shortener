@@ -16,7 +16,7 @@ export class JwtTokenGenerator implements ITokenGenerator {
     return await this.jwtService.signAsync(payload, {
       privateKey: this.configService.getOrThrow<string>('jwt.privateKey'),
       algorithm: this.configService.getOrThrow<Algorithm>('jwt.algorithm'),
-      keyid: 'auth-key-1',
+      expiresIn: this.configService.getOrThrow<string>('jwt.expiresIn'),
     });
   }
 }
