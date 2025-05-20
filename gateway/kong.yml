@@ -14,17 +14,32 @@ services:
         methods:
           - POST
         strip_path: false
+        preserve_host: true
+        path_handling: v0
       - name: auth-register
         paths:
           - /auth/register
         methods:
           - POST
         strip_path: false
+        preserve_host: true
+        path_handling: v0
+      - name: auth-docs
+        paths:
+          - /auth/docs
+          - /auth/docs-json
+          - /auth/docs-json/(.*)
+          - /auth/docs/(.*)
+        methods:
+          - GET
+        strip_path: false
+        preserve_host: true
+        path_handling: v0
     plugins:
       - name: cors
         config:
           origins: ['*']
-          methods: ['POST']
+          methods: ['POST', 'GET']
           headers: ['Accept', 'Content-Type', 'Authorization']
           credentials: true
           max_age: 3600
@@ -78,6 +93,17 @@ services:
               cache_ttl: 60
               response_code: [200, 301, 302]
               request_method: [GET]
+      - name: url-shortener-docs
+        paths:
+          - /url-shortener/docs
+          - /url-shortener/docs-json
+          - /url-shortener/docs-json/(.*)
+          - /url-shortener/docs/(.*)
+        methods:
+          - GET
+        strip_path: false
+        preserve_host: true
+        path_handling: v0
     plugins:
       - name: cors
         config:
