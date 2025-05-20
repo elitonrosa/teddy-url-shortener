@@ -11,9 +11,8 @@ export default () => ({
     database: process.env.DB_DATABASE,
   },
   jwt: {
-    publicKey: process.env.JWT_PUBLIC_KEY,
     privateKey: process.env.JWT_PRIVATE_KEY,
-    algorithm: process.env.JWT_ALGORITHM || 'HS256',
+    algorithm: process.env.JWT_ALGORITHM,
     expiresIn: process.env.JWT_EXPIRES_IN || '1d',
   },
 });
